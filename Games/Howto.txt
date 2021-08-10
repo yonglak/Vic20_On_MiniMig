@@ -1,0 +1,18 @@
+Eg:   
+   Change file names in z.bat
+    
+   gorf.bin  to whatever game
+
+   and gorf.vhd to whatever.vhd
+
+exec z.bat
+
+In Xilinx ISE  10.1.03
+
+Set option to generate bit file and bin under 'generate programming file'
+Remove cart_rom file eg gorf.vhd from source tree
+Add whatever.vhd
+
+Compile 
+
+
