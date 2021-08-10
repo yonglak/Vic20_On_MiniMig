@@ -1,0 +1,168 @@
+CONFIG PART = XC3S400-PQ208-4 ;
+
+### NOTE: when I use "KEEPERS" the Xilinx tools wil crash during mapping. The will generate an fatal error... and that's it, nothing helps except removing keepers from the UCF. perhaps in versions later then ISE 10.1.03 this problem will be fixed
+
+#de ongebruikte IC's op het board moeten in de juiste stand worden gezet, dmv statische signalen gedefinieerd in de core EN de UCF
+
+# IEC-bus can be connected to the Spare-I/O connector
+#
+# Signal | Pin |  IEC-Signal
+# =======|=====|==============
+# USER0  |  3  |  ATN
+# USER1  |  5  |  CLOCK
+# USER2  |  7  |  DATA
+# -----  |  8  |  GND
+# USER3  |  not available because it is occupied by the patch that was required for revision 1.0 of the minimig board
+
+NET "I_CLK_REF" 		LOC = "p80" 	| IOSTANDARD = LVCMOS33; 					# 4.433MHz oscillator
+NET "pwrled"  			LOC = "P94" 	| IOSTANDARD = LVCMOS33  | DRIVE = 12  | SLEW = SLOW  | PULLUP ;
+
+NET "IEC_ATN"  		LOC = "P15" 	| IOSTANDARD = LVCMOS33 | PULLUP;					#IEC-bus Attention
+NET "IEC_CLOCK"  		LOC = "P16" 	| IOSTANDARD = LVCMOS33 | PULLUP;					#IEC-bus Clock
+NET "IEC_DATA"  		LOC = "P18" 	| IOSTANDARD = LVCMOS33 | PULLUP;					#IEC-bus Data
+
+NET "I_SCANDOUBLER"	LOC = "p194" 	| IOSTANDARD = LVCMOS33 | PULLUP;				#Switch0 is used to switch between PAL and VGA (31K). Up (on) is VGA and LED0 will come on.
+
+NET "I_PS2_CLK" 		LOC = "p11" 	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = SLOW | PULLUP;	#keyboard clock
+NET "I_PS2_DATA" 		LOC = "p10" 	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = SLOW | PULLUP;	#keyboard data
+
+NET "O_AUDIO_L" 		LOC = "p191" 	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;			#audio, left channel
+NET "O_AUDIO_R" 		LOC = "p190" 	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;			#audio, right channel
+
+NET "O_VIDEO_R<0>" 	LOC = "p4"		| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;	#Red
+NET "O_VIDEO_R<1>" 	LOC = "p5"		| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;
+NET "O_VIDEO_R<2>" 	LOC = "p7"		| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;
+NET "O_VIDEO_R<3>"	LOC = "p9"	 	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;
+NET "O_VIDEO_G<0>" 	LOC = "p204"	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;	#Green
+NET "O_VIDEO_G<1>" 	LOC = "p205"	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;
+NET "O_VIDEO_G<2>" 	LOC = "p2"		| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;
+NET "O_VIDEO_G<3>"	LOC = "p3"	 	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;
+NET "O_VIDEO_B<0>" 	LOC = "p198"	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;	#Blue
+NET "O_VIDEO_B<1>" 	LOC = "p199"	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;
+NET "O_VIDEO_B<2>" 	LOC = "p200"	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;
+NET "O_VIDEO_B<3>"	LOC = "P203" 	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;
+NET "O_HSYNC" 			LOC = "P196" 	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;	#Horizontal sync
+NET "O_VSYNC" 			LOC = "p197" 	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;	#Vertical sync
+
+NET "joy1_up"  		LOC = "P172" 	| IOSTANDARD = LVCMOS33  | PULLUP ; 			#up
+NET "joy1_down"  		LOC = "P171" 	| IOSTANDARD = LVCMOS33  | PULLUP ; 			#down
+NET "joy1_left"  		LOC = "P169" 	| IOSTANDARD = LVCMOS33  | PULLUP ; 			#left
+NET "joy1_right" 		LOC = "P167" 	| IOSTANDARD = LVCMOS33  | PULLUP ; 			#right
+NET "joy1_fire"  		LOC = "P168" 	| IOSTANDARD = LVCMOS33  | PULLUP ; 			#Fire (button-1)
+NET "joy1_button2"	LOC = "P175" 	| IOSTANDARD = LVCMOS33  | PULLUP ; 			#button-2
+
+#----------------------------------------------------------------------
+#even the IO-pins connected to unused logic/circuitry has to be defined
+#----------------------------------------------------------------------
+####################NET "n_joy2<0>"  		LOC = "P182" 	| IOSTANDARD = LVCMOS33  | PULLUP ; 			#up 
+####################NET "n_joy2<1>"  		LOC = "P181" 	| IOSTANDARD = LVCMOS33  | PULLUP ; 			#down 
+####################NET "n_joy2<2>"  		LOC = "P180" 	| IOSTANDARD = LVCMOS33  | PULLUP ; 			#left 
+####################NET "n_joy2<3>"  		LOC = "P176" 	| IOSTANDARD = LVCMOS33  | PULLUP ; 			#right 
+####################NET "n_joy2<4>"  		LOC = "P178" 	| IOSTANDARD = LVCMOS33  | PULLUP ; 			#fire (button-1)
+####################NET "n_joy2<5>"  		LOC = "P183" 	| IOSTANDARD = LVCMOS33  | PULLUP ;  			#button-2
+
+####################NET "mclk"  		LOC = "P80" 	| IOSTANDARD = LVCMOS33 ; 
+NET "msclk"  		LOC = "P13" 	| DRIVE = 12  | IOSTANDARD = LVCMOS33  | PULLUP  | SLEW = SLOW ; 
+NET "msdat"  		LOC = "P12" 	| DRIVE = 12  | IOSTANDARD = LVCMOS33  | PULLUP  | SLEW = SLOW ; 
+
+NET "spiclk"  		LOC = "P90" 	| IOSTANDARD = LVCMOS33 ; 
+NET "spidin"  		LOC = "P85" 	| IOSTANDARD = LVCMOS33 ; 
+NET "spidout"  		LOC = "P19" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ;
+
+NET "cts"  			LOC = "P189" 	| IOSTANDARD = LVCMOS33 ; 
+NET "rts"  			LOC = "P187" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "rxd"  			LOC = "P185" 	| IOSTANDARD = LVCMOS33 ; 
+NET "txd"  			LOC = "P184" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+
+NET "r_w"  			LOC = "P106" 	| IOSTANDARD = LVCMOS33 ; 
+NET "n_uds"  		LOC = "P108" 	| IOSTANDARD = LVCMOS33 ; 
+NET "n_as"  		LOC = "P109"	| IOSTANDARD = LVCMOS33 ; 
+NET "n_cpureset"  	LOC = "P95" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "n_dtack"  		LOC = "P102"	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "n_ipl<0>"  		LOC = "P96"		| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "n_ipl<1>"  		LOC = "P97"		| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "n_ipl<2>"  		LOC = "P100" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "n_lds"  		LOC = "P107" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuclk"  		LOC = "P101" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "cpuaddress<1>"  	LOC = "P166" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<2>"  	LOC = "P165" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<3>"  	LOC = "P162" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<4>"  	LOC = "P161" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<5>"  	LOC = "P156" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<6>"  	LOC = "P155" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<7>"  	LOC = "P154" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<8>"  	LOC = "P152" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<9>"  	LOC = "P150" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<10>"  	LOC = "P149" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<11>"  	LOC = "P148" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<12>"  	LOC = "P147" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<13>"  	LOC = "P146" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<14>"  	LOC = "P144" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<15>"  	LOC = "P143" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<16>"  	LOC = "P141" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<17>"  	LOC = "P140" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<18>"  	LOC = "P139" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<19>"  	LOC = "P138" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<20>"  	LOC = "P137" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<21>"  	LOC = "P135" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<22>"  	LOC = "P133" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpuaddress<23>"  	LOC = "P132" 	| IOSTANDARD = LVCMOS33 ; 
+NET "cpudata<0>"  	LOC = "P111" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<1>"  	LOC = "P113" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<2>"  	LOC = "P114" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<3>"  	LOC = "P115" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<4>"  	LOC = "P116" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<5>"  	LOC = "P117" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<6>"  	LOC = "P119" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<7>"  	LOC = "P120" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<8>"  	LOC = "P122" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<9>"  	LOC = "P123" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<10>"  	LOC = "P124" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<11>"  	LOC = "P125" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<12>"  	LOC = "P126" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<13>"  	LOC = "P128" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<14>"  	LOC = "P130" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "cpudata<15>" 	LOC = "P131" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ;
+
+NET "n_ramsel0"  		LOC = "P28" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW  | PULLUP; 
+NET "n_ramsel1"  		LOC = "P20" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW  | PULLUP; 
+NET "n_lb"  		LOC = "P42" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW  | PULLUP; 
+NET "n_oe"  		LOC = "P39" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW  | PULLUP; 
+NET "n_ub"  		LOC = "P40" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW  | PULLUP; 
+NET "n_we"  		LOC = "P72" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW  | PULLUP; 
+NET "ramaddress<0>"  	LOC = "P27" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<1>"  	LOC = "P26" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<2>"  	LOC = "P24" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<3>"  	LOC = "P22" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<4>"  	LOC = "P21" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<5>"  	LOC = "P35" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<6>"  	LOC = "P36" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<7>"  	LOC = "P37" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<8>"  	LOC = "P57" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<9>"  	LOC = "P58" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<10>"  	LOC = "P61" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<11>"  	LOC = "P62" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<12>"  	LOC = "P63" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<13>"  	LOC = "P64" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<14>"  	LOC = "P79" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<15>"  	LOC = "P78" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<16>"  	LOC = "P77" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<17>"  	LOC = "P76" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramaddress<18>"  	LOC = "P74" 	| IOSTANDARD = LVCMOS33  | DRIVE = 4  | SLEW = SLOW ; 
+NET "ramdata<0>"  	LOC = "P29" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<1>"  	LOC = "P31" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<2>"  	LOC = "P33" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<3>"  	LOC = "P34" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<4>"  	LOC = "P65" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<5>"  	LOC = "P67" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<6>"  	LOC = "P68" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<7>"  	LOC = "P71" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<8>"  	LOC = "P52" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<9>"  	LOC = "P51" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<10>" 	LOC = "P50" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<11>"  	LOC = "P48" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<12>"  	LOC = "P46" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<13>"  	LOC = "P45" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<14>"  	LOC = "P44" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+NET "ramdata<15>"  	LOC = "P43" 	| IOSTANDARD = LVCMOS33  | SLEW = SLOW  | DRIVE = 4 ; 
+ 

@@ -1,0 +1,107 @@
+Protocol on the serial line
+
+Design criterion: simplicity
+
+The line must transceive 8-bit bytes.  It must be possible to
+distinguish the data payload from the control stream.  It would be
+tempting to mark the control stream with non-standard transmission
+patterns, such as intentional framing errors or breaks.  However,
+since these non-standard patterns are not uniformly supported across
+different platforms, it is best to stay with standard data streams.
+
+Data encapsulation is arranged by using a prefix-closed command
+language.  The safety measures against out-of-sync errors are that the
+controller enters the idle mode upon the reception of a break signal
+or an unrecognized command byte.  When the controller is receiving
+regular data bytes or command parameters, it does not accept commands.
+When the controller receives a command byte, it responds by sending the
+command byte ORed with 0x30.
+
+The main handshaking method is XON/XOFF, which is used during periods
+of excessive communication (when receiving data in the "load" and
+custom "send" functions).  The computer may not interrupt the
+controller during any operations, but the controller may interrupt the
+computer by sending DC1 (ctrl-s) when its input buffer is filling up
+with data.  The transfer is resumed by sending DC3 (ctrl-q) when the
+buffer is getting empty.
+
+Packets originated by the computer
+
+- Set operating mode (MM PP ...):
+  - MM=0x00: idle (do nothing)
+    - the controller flushes its buffers
+    - the cassette sense signal is negated
+  - MM=0x01: pulse width measurement mode (on cassette write signal)
+  - MM=0x02: read data from cassette write signal
+    - PP ... = short medium long (maximum pulse widths; unit=8 µs)
+  - MM=0x03: write data to cassette read signal
+    - PP ... = pause short medium long (8-bit pulse widths; unit=8 µs)
+  - MM=0x04: send PPPP bytes using custom protocol
+    - the command byte is followed by the LSB and MSB of the
+      number of bytes to send (minus 1) and by the actual data bytes
+  - MM=0x05: receive PPPP bytes using custom protocol
+    - the command byte is followed by the LSB and MSB of the
+      number of bytes to send (minus 1)
+    - when the data has been received by the other end, a '@' character
+      is echoed to the serial line
+  - MM=0x06: calibrate and receive PPPP bytes using custom protocol
+    - the command byte is followed by the LSB and MSB of the
+      number of bytes to send (minus 1)
+    - the first byte the C= is expected to send is $f0, which is used as
+      a calibration aid and is not forwarded to the RS-232 line
+    - when the data has been received by the other end, a '@' character
+      is echoed to the serial line
+- Pulse width (MM=0x03)
+  - 'A'=pause
+  - 'B'=short
+  - 'C'=medium
+  - 'D'=long
+- raw data (MM=0x04)
+  - any byte in the range 0x00..0xff
+
+Packets originated by the controller
+
+- Pulse width measurement mode (MM=0x01; WW):
+  - WW=pulse width (unit=8 µs)
+- Pulse width (MM=0x02)
+  - 'A'=pause
+  - 'B'=short
+  - 'C'=medium
+  - 'D'=long
+- Raw data (MM=0x05)
+- Start transfer (MM=0x02 or MM=0x04; DC3, 0x13):
+  - issued whenever the buffer becomes 75% empty
+- Stop transfer (MM=0x02 or MM=0x04; DC1, 0x11):
+  - issued whenever the buffer becomes 75% full
+
+Connections:
+
+- cassette write: PD6 (input capture)
+- cassette read:  PB3 (output compare)
+- cassette sense: PB0
+
+pulse width measurement unit = 8 MHz/64 = 125 kHz = 8 µs
+
+/µs	PAL VIC-20	CBM 8032SK	PAL C64		PAL C128
+short	37..42 (316±20)	41..46 (348±20)	45..50 (380±20)	48..53 (404±20)
+medium	55..59 (456±16)	61..65 (504±16)	65..69 (536±16)	68..72 (560±16)
+long	75..77 (608±8)	83..86 (676±12)	87..90 (708±12)	90..93 (732±12)
+bck/MHz	1.108404	1		.940 (.985248)	.920 (.985248)
+
+/µs	PAL plus/4
+short	60..62   (488±8)
+medium	119..121 (896±8)
+long	239..241(1920±8)
+
+common (for other than the Commodore 264 series):
+short   37..53 (45±8)
+medium  55..72 (63½±8½)
+long    75..93 (84±9)
+save (upper limits): 54,74,94 (6J^)
+load (exact values): 255,45,63,83
+
+Tim Arnot: Commodore 64 Whole Memory Guide
+(looks like 1 MHz PET timings):
+short   2840 Hz (352µs)
+medium  1953 Hz (512µs)
+long    1488 Hz (672µs)
